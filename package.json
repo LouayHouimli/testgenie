@@ -1,0 +1,43 @@
+{
+  "name": "testgenie",
+  "version": "0.1.0",
+  "description": "AI-powered test case generator for your codebase",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "testgenie": "dist/index.js"
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target node --minify",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "testing",
+    "ai",
+    "cli",
+    "test-generation",
+    "jest",
+    "vitest"
+  ],
+  "author": "LouayHouimli",
+  "license": "MIT",
+  "dependencies": {
+    "yargs": "^18.0.0",
+    "consola": "^3.4.2",
+    "execa": "^9.6.0",
+    "fs-extra": "^11.3.0",
+    "globby": "^14.1.0"
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.32",
+    "@types/fs-extra": "^11.0.4",
+    "typescript": "^5.3.3",
+    "bun-types": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

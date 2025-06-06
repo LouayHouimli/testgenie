@@ -1,0 +1,10 @@
+import { describe, test, expect } from 'vitest'; import {
+{{moduleName}}
+} from '../{{filePath}}'; describe('{{moduleName}}', () => {
+{{#each functions}}
+  test('should
+  {{description}}', () => { expect({{name}}({{#each params}}{{this}}{{#unless
+      @last
+    }}, {{/unless}}{{/each}})).toBe(expectedResult); });
+{{/each}}
+});
