@@ -66,3 +66,5 @@ export interface AIGenerationResponse {
   testsGenerated: number;
   framework: string;
 }
+
+export { FrameworkConfig } from "../core/framework/index.ts";
