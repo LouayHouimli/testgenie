@@ -78,8 +78,9 @@ export function registerScanCommand(cli: Argv) {
                 );
               });
 
+              const { isSourceFile } = await import("../../utils/index.ts");
               const codeChanges = diffInfo.changes.filter((change) =>
-                change.file.match(/\.(js|ts|jsx|tsx)$/)
+                isSourceFile(change.file)
               );
 
               if (codeChanges.length > 0) {

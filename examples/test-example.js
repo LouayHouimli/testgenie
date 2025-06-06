@@ -23,3 +23,6 @@ export default fetchUser;
 export function testFunction() {
   return "hello world";
 }
+export function addTask(task) {
+  return task;
+}

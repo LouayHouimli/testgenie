@@ -120,9 +120,9 @@ async function generateTestsForGitChanges(argv: any, parser: any) {
       diffInfo = await git.getUncommittedDiff();
     }
 
+    const { isSourceFile } = await import("../../utils/index.ts");
     const codeChanges = diffInfo.changes.filter(
-      (change) =>
-        change.file.match(/\.(js|ts|jsx|tsx)$/) && change.status !== "deleted"
+      (change) => isSourceFile(change.file) && change.status !== "deleted"
     );
 
     if (codeChanges.length === 0) {

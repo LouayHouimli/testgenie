@@ -40,12 +40,18 @@ export class GitManager {
 
     const changes = await this.parseGitStatus();
 
+    const codeFiles = [];
+    for (const change of changes) {
+      if (await this.isCodeFile(change.file)) {
+        codeFiles.push(change);
+      }
+    }
+
     return {
       changes,
       diffText,
       totalFiles: changes.length,
-      codeFiles: changes.filter((change) => this.isCodeFile(change.file))
-        .length,
+      codeFiles: codeFiles.length,
     };
   }
 
@@ -59,12 +65,18 @@ export class GitManager {
     const changes = await this.parseGitStatus();
     const stagedChanges = changes.filter((change) => change.staged);
 
+    const codeFiles = [];
+    for (const change of stagedChanges) {
+      if (await this.isCodeFile(change.file)) {
+        codeFiles.push(change);
+      }
+    }
+
     return {
       changes: stagedChanges,
       diffText,
       totalFiles: stagedChanges.length,
-      codeFiles: stagedChanges.filter((change) => this.isCodeFile(change.file))
-        .length,
+      codeFiles: codeFiles.length,
     };
   }
 
@@ -80,13 +92,18 @@ export class GitManager {
       (change) => change.modified && !change.staged
     );
 
+    const codeFiles = [];
+    for (const change of modifiedChanges) {
+      if (await this.isCodeFile(change.file)) {
+        codeFiles.push(change);
+      }
+    }
+
     return {
       changes: modifiedChanges,
       diffText,
       totalFiles: modifiedChanges.length,
-      codeFiles: modifiedChanges.filter((change) =>
-        this.isCodeFile(change.file)
-      ).length,
+      codeFiles: codeFiles.length,
     };
   }
 
@@ -138,9 +155,9 @@ export class GitManager {
     return changes;
   }
 
-  private isCodeFile(filePath: string): boolean {
-    const codeExtensions = [".js", ".ts", ".jsx", ".tsx", ".mjs", ".cjs"];
-    return codeExtensions.includes(extname(filePath));
+  private async isCodeFile(filePath: string): Promise<boolean> {
+    const { isSourceFile } = await import("../../utils/index.ts");
+    return isSourceFile(filePath);
   }
 
   async getCurrentBranch(): Promise<string> {
