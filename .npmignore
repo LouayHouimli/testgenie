@@ -1,0 +1,34 @@
+# Source files
+src/
+examples/
+__tests__/
+
+# Development files
+.gitignore
+.env
+.env.local
+.env.example
+tsconfig.json
+bun.lockb
+
+# Node modules and build artifacts
+node_modules/
+*.log
+*.tmp
+*.temp
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts 
