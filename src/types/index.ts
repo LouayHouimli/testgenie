@@ -38,3 +38,31 @@ export interface GitChange {
   additions: number;
   deletions: number;
 }
+
+export interface GitFileChange {
+  file: string;
+  status: "added" | "modified" | "deleted" | "staged";
+  staged: boolean;
+  modified: boolean;
+}
+
+export interface GitDiffInfo {
+  changes: GitFileChange[];
+  diffText: string;
+  totalFiles: number;
+  codeFiles: number;
+}
+
+export interface AIGenerationRequest {
+  sourceCode: string;
+  functions: ParsedFunction[];
+  framework: string;
+  style: string;
+  filePath: string;
+}
+
+export interface AIGenerationResponse {
+  testCode: string;
+  testsGenerated: number;
+  framework: string;
+}

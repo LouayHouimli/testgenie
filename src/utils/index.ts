@@ -8,8 +8,16 @@ export function getTestFilePath(
   sourceFile: string,
   testDir: string = "__tests__"
 ): string {
-  const baseName = sourceFile.replace(/\.(js|ts|jsx|tsx)$/, "");
-  return `${testDir}/${baseName}.test.js`;
+  const path = require("path");
+  const fileName = path.basename(sourceFile);
+  const baseName = fileName.replace(/\.(js|ts|jsx|tsx)$/, "");
+  const dir = path.dirname(sourceFile);
+
+  if (dir === "." || dir === "") {
+    return `${testDir}/${baseName}.test.js`;
+  }
+
+  return `${testDir}/${dir}/${baseName}.test.js`;
 }
 
 export function isTestFile(filePath: string): boolean {

@@ -10,3 +10,4 @@ export function registerCommands(cli: Argv) {
   registerAuditCommand(cli);
   registerInitCommand(cli);
 }
+ 
