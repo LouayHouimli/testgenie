@@ -15,6 +15,7 @@
         "fs-extra": "^11.2.0",
         "globby": "^14.0.2",
         "simple-git": "^3.27.0",
+        "testgenie-ai": "^1.0.0",
         "yargs": "^17.7.2",
       },
       "devDependencies": {
@@ -235,6 +236,8 @@
     "strip-final-newline": ["strip-final-newline@4.0.0", "", {}, "sha512-aulFJcD6YK8V1G7iRB5tigAP4TsHBZZrOV8pjV++zdUwmeV8uzbY7yn6h9MswN62adStNZFuCIx4haBnRuMDaw=="],
 
     "swr": ["swr@2.3.3", "", { "dependencies": { "dequal": "^2.0.3", "use-sync-external-store": "^1.4.0" }, "peerDependencies": { "react": "^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-dshNvs3ExOqtZ6kJBaAsabhPdHyeY4P2cKwRCniDVifBMoG/SVI7tfLWqPXriVspf2Rg4tPzXJTnwaihIeFw2A=="],
+
+    "testgenie-ai": ["testgenie-ai@1.0.0", "", { "dependencies": { "@ai-sdk/google": "^1.0.8", "@babel/parser": "^7.26.2", "@babel/traverse": "^7.26.2", "@babel/types": "^7.26.0", "ai": "^4.0.12", "consola": "^3.2.3", "dotenv": "^16.4.7", "execa": "^9.5.1", "fs-extra": "^11.2.0", "globby": "^14.0.2", "simple-git": "^3.27.0", "yargs": "^17.7.2" }, "bin": { "testgenie": "dist/index.js" } }, "sha512-Uad/zg4lMrkcRL6vuBFuqsl2lzZtqwCLtGhNaMrBMIC1FiypcvkRlM8hptT+3EKilQo5lAIn2csJJFJFBTbrOw=="],
 
     "throttleit": ["throttleit@2.1.0", "", {}, "sha512-nt6AMGKW1p/70DF/hGBdJB57B8Tspmbp5gfJ8ilhLnt7kkr2ye7hzD6NVG8GGErk2HWF34igrL2CXmNIkzKqKw=="],
 

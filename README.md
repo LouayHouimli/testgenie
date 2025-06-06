@@ -17,10 +17,10 @@ AI-powered test generator that scans your codebase or git changes and generates 
 
 ```bash
 # Install globally with Bun (recommended)
-bun install -g testgenie
+bun install -g testgenie-ai
 
 # Or install with npm
-npm install -g testgenie
+npm install -g testgenie-ai
 ```
 
 ## 🔧 Setup

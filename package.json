@@ -1,5 +1,5 @@
 {
-  "name": "testgenie",
+  "name": "testgenie-ai",
   "version": "1.0.0",
   "description": "AI-powered test generator with framework support, pattern detection, and React Testing Library integration",
   "type": "module",
