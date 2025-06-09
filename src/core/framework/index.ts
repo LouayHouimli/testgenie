@@ -2,45 +2,53 @@ import { readFile } from "fs-extra";
 import { join } from "path";
 
 export interface FrameworkConfig {
-  name: "jest" | "vitest" | "mocha";
+  name: "jest"; // vitest and mocha coming soon
   version?: string;
-  imports: string[];
-  setupFiles?: string[];
+  imports: string;
   mocks: {
     function: string;
     module: string;
-    timer: string;
+    clear: string;
+    restore: string;
   };
   assertions: {
-    toBe: string;
-    toEqual: string;
-    toThrow: string;
-    resolves: string;
-    rejects: string;
+    equal: string;
+    notEqual: string;
+    truthy: string;
+    falsy: string;
+    throws: string;
   };
 }
 
 export class FrameworkDetector {
-  async detectFramework(projectPath: string = "."): Promise<FrameworkConfig> {
+  async detectFramework(): Promise<FrameworkConfig> {
+    const fs = await import("fs-extra");
+
+    let packageJson: any = {};
     try {
-      const packageJsonPath = join(projectPath, "package.json");
-      const packageJson = JSON.parse(await readFile(packageJsonPath, "utf-8"));
-
-      const allDeps = {
-        ...packageJson.dependencies,
-        ...packageJson.devDependencies,
-      };
-
-      if (allDeps.vitest) {
-        return this.getVitestConfig(allDeps.vitest);
-      } else if (allDeps.jest || allDeps["@jest/globals"]) {
-        return this.getJestConfig(allDeps.jest || allDeps["@jest/globals"]);
-      } else if (allDeps.mocha) {
-        return this.getMochaConfig(allDeps.mocha);
+      if (await fs.pathExists("package.json")) {
+        packageJson = await fs.readJson("package.json");
       }
+    } catch (error) {
+      packageJson = {};
+    }
 
-      return this.getJestConfig();
-    } catch {
+    const allDeps = {
+      ...packageJson.dependencies,
+      ...packageJson.devDependencies,
+    };
+
+    if (allDeps.vitest) {
+      throw new Error(
+        "Vitest detected but not yet supported. Jest support only for now. Vitest coming soon!"
+      );
+    } else if (allDeps.mocha) {
+      throw new Error(
+        "Mocha detected but not yet supported. Jest support only for now. Mocha coming soon!"
+      );
+    } else if (allDeps.jest || allDeps["@jest/globals"]) {
+      return this.getJestConfig(allDeps.jest);
+    } else {
       return this.getJestConfig();
     }
   }
@@ -49,66 +57,20 @@ export class FrameworkDetector {
     return {
       name: "jest",
       version,
-      imports: [
+      imports:
         "import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';",
-      ],
       mocks: {
         function: "jest.fn()",
         module: "jest.mock()",
-        timer: "jest.useFakeTimers()",
+        clear: "jest.clearAllMocks()",
+        restore: "jest.restoreAllMocks()",
       },
       assertions: {
-        toBe: "expect(result).toBe(expected)",
-        toEqual: "expect(result).toEqual(expected)",
-        toThrow: "expect(() => fn()).toThrow()",
-        resolves: "await expect(promise).resolves.toBe(expected)",
-        rejects: "await expect(promise).rejects.toThrow()",
-      },
-    };
-  }
-
-  private getVitestConfig(version?: string): FrameworkConfig {
-    return {
-      name: "vitest",
-      version,
-      imports: [
-        "import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';",
-      ],
-      mocks: {
-        function: "vi.fn()",
-        module: "vi.mock()",
-        timer: "vi.useFakeTimers()",
-      },
-      assertions: {
-        toBe: "expect(result).toBe(expected)",
-        toEqual: "expect(result).toEqual(expected)",
-        toThrow: "expect(() => fn()).toThrow()",
-        resolves: "await expect(promise).resolves.toBe(expected)",
-        rejects: "await expect(promise).rejects.toThrow()",
-      },
-    };
-  }
-
-  private getMochaConfig(version?: string): FrameworkConfig {
-    return {
-      name: "mocha",
-      version,
-      imports: [
-        "import { describe, it } from 'mocha';",
-        "import { expect } from 'chai';",
-        "import sinon from 'sinon';",
-      ],
-      mocks: {
-        function: "sinon.stub()",
-        module: "sinon.stub()",
-        timer: "sinon.useFakeTimers()",
-      },
-      assertions: {
-        toBe: "expect(result).to.equal(expected)",
-        toEqual: "expect(result).to.deep.equal(expected)",
-        toThrow: "expect(() => fn()).to.throw()",
-        resolves: "expect(await promise).to.equal(expected)",
-        rejects: "expect(promise).to.be.rejected",
+        equal: "expect(result).toBe(expected)",
+        notEqual: "expect(result).not.toBe(expected)",
+        truthy: "expect(result).toBeTruthy()",
+        falsy: "expect(result).toBeFalsy()",
+        throws: "expect(() => fn()).toThrow()",
       },
     };
   }

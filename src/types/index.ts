@@ -67,4 +67,21 @@ export interface AIGenerationResponse {
   framework: string;
 }
 
-export { FrameworkConfig } from "../core/framework/index.ts";
+export interface FrameworkConfig {
+  name: "jest"; // vitest and mocha coming soon
+  version?: string;
+  imports: string;
+  mocks: {
+    function: string;
+    module: string;
+    clear: string;
+    restore: string;
+  };
+  assertions: {
+    equal: string;
+    notEqual: string;
+    truthy: string;
+    falsy: string;
+    throws: string;
+  };
+}

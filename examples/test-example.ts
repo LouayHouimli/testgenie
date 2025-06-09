@@ -1,25 +1,39 @@
-import { readFile } from "fs-extra";
-import { resolve } from "path";
-
-export interface User {
-  id: number;
-  name: string;
+export function calculateTax(amount, rate) {
+  if (amount < 0) {
+    throw new Error("Amount cannot be negative");
+  }
+  return amount * rate;
 }
 
-export class UserService {
-  async getUser(id: number): Promise<User> {
-    const data = await readFile(`users/${id}.json`, "utf-8");
-    return JSON.parse(data.toString());
-  }
-
-  validateUser(user: User): boolean {
-    return user.id > 0 && user.name.length > 0;
-  }
-}
-
-const formatUserName = (user: User): string => {
-  return user.name.toUpperCase();
+const formatCurrency = (value, currency = "USD") => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency,
+  }).format(value);
 };
 
-export { formatUserName };
-export default UserService;
+async function fetchUser(id) {
+  const response = await fetch(`/api/users/${id}`);
+  return response.json();
+}
+
+export { formatCurrency };
+export default fetchUser;
+
+export function testFunction() {
+  return "hello world";
+}
+export function addTask(task) {
+  return task;
+}
+export function testFunction2() {
+  return "hello world 2";
+}
+
+export function testFunction3() {
+  return "hello world 3";
+}
+
+export function testFunction4() {
+  return "hello world 4";
+}

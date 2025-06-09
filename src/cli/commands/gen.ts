@@ -1,61 +1,65 @@
 import type { Argv } from "yargs";
 import { consola } from "consola";
+import { loadConfig, requireInitialization } from "../../config/index.js";
+import { ArgumentsCamelCase } from "yargs";
+import * as yargs from "yargs";
 
-export function registerGenCommand(cli: Argv) {
-  cli.command(
-    "gen [file]",
-    "Generate tests for specific file or git changes",
-    (yargs) => {
-      return yargs
-        .positional("file", {
-          describe:
-            "Path to the file to generate tests for (optional if using --diff/--since)",
-          type: "string",
-        })
-        .option("framework", {
-          alias: "f",
-          describe: "Testing framework to use",
-          choices: ["jest", "vitest", "mocha"],
-          default: "jest",
-        })
-        .option("style", {
-          alias: "s",
-          describe: "Test style to generate",
-          choices: ["bdd", "tdd", "minimal", "verbose"],
-          default: "bdd",
-        })
-        .option("diff", {
-          alias: "d",
-          describe: "Generate tests for git diff changes",
-          type: "boolean",
-          default: false,
-        })
-        .option("since", {
-          describe:
-            'Generate tests for changes since specific time (e.g., "2 hours ago")',
-          type: "string",
-        });
-    },
-    async (argv) => {
-      const { CodeParser } = await import("../../core/parser/index.ts");
-      const parser = new CodeParser();
+export const genCommand: yargs.CommandModule = {
+  command: "gen [file]",
+  describe: "Generate tests for specified files or git changes",
+  builder: (yargs: Argv) =>
+    yargs
+      .positional("file", {
+        describe: "File to generate tests for",
+        type: "string",
+      })
+      .option("diff", {
+        alias: "d",
+        describe: "Generate tests for git diff",
+        type: "boolean",
+        default: false,
+      })
+      .option("since", {
+        alias: "s",
+        describe: "Generate tests for changes since commit",
+        type: "string",
+      })
+      .option("style", {
+        describe: "Override test style",
+        choices: ["bdd", "tdd", "minimal", "verbose"] as const,
+      })
+      .option("output", {
+        alias: "o",
+        describe: "Output directory for generated tests",
+        type: "string",
+      }),
+  handler: async (argv: ArgumentsCamelCase<any>) => {
+    requireInitialization("gen");
 
-      consola.info(`📋 Framework: ${argv.framework}`);
-      consola.info(`🎨 Style: ${argv.style}`);
+    const config = await loadConfig();
+    const { CodeParser } = await import("../../core/parser/index.ts");
+    const parser = new CodeParser();
 
-      if (argv.diff || argv.since) {
-        await generateTestsForGitChanges(argv, parser);
-      } else if (argv.file) {
-        await generateTestsForFile(argv, parser);
-      } else {
-        consola.error(
-          "❌ Please specify a file or use --diff/--since for git changes"
-        );
-        process.exit(1);
-      }
+    const style = argv.style || config.style;
+
+    consola.info(`📋 Framework: Jest (Mocha/Vitest coming soon)`);
+    consola.info(`🎨 Style: ${style}`);
+
+    if (argv.diff || argv.since) {
+      await generateTestsForGitChanges(
+        { ...argv, framework: "jest", style },
+        parser
+      );
+    } else if (argv.file) {
+      await generateTestsForFile({ ...argv, framework: "jest", style }, parser);
+    } else {
+      consola.error(
+        "❌ Please specify a file or use --diff/--since for git changes"
+      );
+      process.exit(1);
     }
-  );
-}
+  },
+};
 
 async function generateTestsForFile(argv: any, parser: any) {
   const { existsSync, statSync } = await import("fs-extra");
@@ -163,17 +167,52 @@ async function generateTestsForGitChanges(argv: any, parser: any) {
 async function generateAndSaveTests(parsedFiles: any[], argv: any) {
   const { AITestGenerator } = await import("../../core/ai/index.ts");
   const { writeFile, ensureDir } = await import("fs-extra");
-  const { getTestFilePath } = await import("../../utils/index.ts");
+  const { getTestFilePath, checkDependencies } = await import(
+    "../../utils/index.ts"
+  );
   const path = require("path");
+  const { loadConfig } = await import("../../config/index.js");
 
-  const aiGenerator = new AITestGenerator();
+  const config = await loadConfig();
 
-  if (!aiGenerator.isConfigured()) {
-    consola.error("❌ Google AI API key not configured");
-    consola.info("💡 Set GOOGLE_GENERATIVE_AI_API_KEY environment variable");
-    consola.info("💡 Get your key at: https://aistudio.google.com/app/apikey");
+  const requiredDeps = ["jest", "@jest/globals"];
+  if (
+    parsedFiles.some(
+      (f) => f.filePath.endsWith(".ts") || f.filePath.endsWith(".tsx")
+    )
+  ) {
+    requiredDeps.push("@types/jest", "ts-jest");
+  }
+
+  consola.info("🔍 Checking required dependencies...");
+  const depCheck = await checkDependencies(requiredDeps);
+
+  if (depCheck.missing.length > 0) {
+    consola.error(
+      `❌ Missing required dependencies: ${depCheck.missing.join(", ")}`
+    );
+    consola.info(`💡 Install them with: ${depCheck.installCommand}`);
+    consola.info(`🔧 Package manager detected: ${depCheck.packageManager}`);
     process.exit(1);
   }
+
+  consola.success("✅ All required dependencies are installed");
+
+  const aiGenerator = new AITestGenerator(config);
+  const providerStatus = aiGenerator.getProviderStatus();
+
+  if (!providerStatus.configured) {
+    consola.error(`❌ AI provider (${providerStatus.provider}) not configured`);
+    consola.info(`💡 ${providerStatus.message}`);
+    if (providerStatus.provider !== "testgenie-api") {
+      consola.info(
+        "💡 Or run 'testgenie init' to switch to testgenie-api (no API key needed)"
+      );
+    }
+    process.exit(1);
+  }
+
+  consola.info(`🤖 Using AI provider: ${providerStatus.provider}`);
 
   let totalTestsGenerated = 0;
   const generatedFiles = [];
@@ -204,12 +243,12 @@ async function generateAndSaveTests(parsedFiles: any[], argv: any) {
       const aiResponse = await aiGenerator.generateTests({
         sourceCode: "",
         functions: parsedFile.functions,
-        framework: argv.framework,
+        framework: "jest",
         style: argv.style,
         filePath: parsedFile.filePath,
       });
 
-      const testFilePath = getTestFilePath(parsedFile.filePath);
+      const testFilePath = getTestFilePath(parsedFile.filePath, config.testDir);
       await ensureDir(path.dirname(testFilePath));
       await writeFile(testFilePath, aiResponse.testCode);
 

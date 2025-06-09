@@ -26,3 +26,14 @@ export function testFunction() {
 export function addTask(task) {
   return task;
 }
+export function testFunction2() {
+  return "hello world 2";
+}
+
+export function testFunction3() {
+  return "hello world 3";
+}
+
+export function testFunction4() {
+  return "hello world 4";
+}

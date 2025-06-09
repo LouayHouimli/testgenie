@@ -1,277 +1,431 @@
-# 🧪 Testgenie
+# 🧪 TestGenie AI
 
-AI-powered test generator that scans your codebase or git changes and generates comprehensive test cases using AI. Perfect for CI/CD workflows and development efficiency.
+**AI-powered CLI test generator that creates comprehensive test suites for your JavaScript/TypeScript projects in seconds.**
+
+Generate high-quality, maintainable test files using advanced AI models. TestGenie analyzes your code structure, detects patterns, and creates thorough test coverage automatically.
 
 ## ✨ Features
 
-- 🤖 **AI-Powered**: Generate realistic, comprehensive tests using Google Gemini
-- 🔄 **Git Integration**: Generate tests only for changed code (perfect for CI/CD)
-- 📁 **Multi-Framework**: Auto-detect and support Jest, Vitest, and Mocha
-- 🎨 **Multiple Styles**: BDD, TDD, minimal, and verbose test styles
-- ⚛️ **React Support**: Enhanced React Testing Library integration with component/hook patterns
-- 🎯 **Pattern Detection**: Smart detection of function types (API, async, React components, etc.)
-- 🔍 **Smart Parsing**: AST-based code analysis for accurate function detection
-- ⚡ **Fast & Efficient**: Built with Bun for maximum performance
+- 🤖 **AI-Powered Generation**: Creates comprehensive test suites using multiple AI providers
+- 🎯 **Smart Code Analysis**: Automatically detects functions, patterns, and dependencies
+- 📊 **Test Coverage Analysis**: Scans projects and identifies untested code
+- 🔄 **Git Integration**: Generate tests for changed files or specific commits
+- ⚡ **Framework Support**: Jest (Mocha and Vitest coming soon!)
+- 🎨 **Multiple Test Styles**: BDD, TDD, minimal, and verbose options
+- 🌐 **Multi-Provider AI**: OpenAI, Google Gemini, Anthropic Claude, or TestGenie API
+- 📁 **Flexible Configuration**: Customize test directories, patterns, and coverage thresholds
 
-## 🚀 Installation
+## 🚀 Quick Start
+
+### Installation
 
 ```bash
-# Install globally with Bun (recommended)
-bun install -g testgenie-ai
-
-# Or install with npm
 npm install -g testgenie-ai
+# or
+yarn global add testgenie-ai
+# or
+pnpm add -g testgenie-ai
+# or
+bun add -g testgenie-ai
 ```
 
-## 🔧 Setup
-
-Set your Google AI API key:
+### Initialize Configuration
 
 ```bash
-export GOOGLE_GENERATIVE_AI_API_KEY="your-api-key-here"
+testgenie init
 ```
 
-Get your API key at: https://aistudio.google.com/app/apikey
+This interactive setup will configure:
 
-## ⚡ Quick Start
+- **Test Framework**: Jest (currently supported)
+- **Test Style**: BDD, TDD, minimal, or verbose
+- **AI Provider**: Choose from multiple providers
+- **Test Directory**: Where to generate test files
+- **Coverage Settings**: Minimum coverage thresholds
+
+### Generate Tests
 
 ```bash
 # Generate tests for a specific file
-testgenie gen src/utils/calculator.js
+testgenie gen src/utils/helper.ts
 
-# Generate tests for uncommitted changes
+# Generate tests for git changes
 testgenie gen --diff
 
-# Generate tests for changes since specific time
-testgenie gen --since="2 hours ago"
-
-# Scan and analyze git changes
-testgenie scan --diff
+# Generate tests for changes since specific commit
+testgenie gen --since HEAD~3
 ```
 
 ## 📋 Commands
 
-### `testgenie gen [file]`
+### `testgenie init`
 
-Generate AI-powered tests for a specific file or git changes.
+Initialize or update configuration file.
 
 **Options:**
 
-- `--framework, -f`: Testing framework (jest, vitest, mocha) - auto-detected from package.json
-- `--style, -s`: Test style (bdd, tdd, minimal, verbose) - default: bdd
-- `--diff, -d`: Generate tests for git diff changes
-- `--since`: Generate tests for changes since specific time
+- `--force, -f`: Overwrite existing configuration
 
-**Test Styles:**
+**Example:**
 
-- **BDD**: Behavior-driven with descriptive `describe('when X', () => { it('should Y') })` patterns
-- **TDD**: Test-driven development with RED-GREEN-REFACTOR phases and comments
-- **Minimal**: Concise tests focused on core functionality and basic edge cases
-- **Verbose**: Comprehensive tests with detailed documentation, performance tests, and extensive coverage
+```bash
+testgenie init --force
+```
+
+### `testgenie gen [file]`
+
+Generate comprehensive test files.
+
+**Arguments:**
+
+- `file`: Specific file to generate tests for
+
+**Options:**
+
+- `--diff, -d`: Generate tests for uncommitted git changes
+- `--since, -s <commit>`: Generate tests for changes since commit
+- `--style <style>`: Override test style (bdd, tdd, minimal, verbose)
+- `--output, -o <dir>`: Override output directory
 
 **Examples:**
 
 ```bash
-# Single file generation with style options
-testgenie gen src/auth.js --style bdd
-testgenie gen src/components/Button.jsx --style verbose
+# Generate tests for specific file
+testgenie gen src/components/Button.tsx
 
-# Framework-specific generation (auto-detected)
-testgenie gen src/api/users.js --framework vitest --style tdd
-
-# Generate tests for git changes
+# Generate tests for all changed files
 testgenie gen --diff
-testgenie gen --since="1 hour ago"
-testgenie gen --diff --style minimal
 
-# React component testing
-testgenie gen src/components/Counter.jsx --style verbose
+# Generate tests since last commit
+testgenie gen --since HEAD~1
+
+# Use specific style
+testgenie gen src/utils/math.js --style minimal
 ```
 
 ### `testgenie scan [path]`
 
-Scan and analyze codebase or git changes without generating tests.
+Analyze project for test coverage and discover files.
+
+**Arguments:**
+
+- `path`: Directory to scan (default: current directory)
 
 **Options:**
 
-- `--diff, -d`: Scan git diff instead of all files
-- `--since`: Scan changes since specific time
+- `--output, -o <file>`: Save results to file
+- `--format, -f <format>`: Output format (json, csv, text)
 
 **Examples:**
 
 ```bash
-# Scan directory
-testgenie scan src/
+# Scan current directory
+testgenie scan
 
-# Analyze git changes
-testgenie scan --diff
-testgenie scan --since="2 hours ago"
+# Scan specific directory with JSON output
+testgenie scan src --format json --output coverage-report.json
+
+# Quick scan of components
+testgenie scan src/components
 ```
 
-### `testgenie audit [path]` _(Coming Soon)_
+### `testgenie audit [path]`
 
-Audit test coverage and suggest improvements.
+Comprehensive test coverage audit with recommendations.
 
-### `testgenie init` _(Coming Soon)_
+**Arguments:**
 
-Initialize testgenie configuration file.
+- `path`: Directory to audit (default: current directory)
 
-## 🎯 Git Workflow Integration
+**Options:**
 
-Perfect for modern development workflows:
+- `--fix`: Auto-generate tests for uncovered files
+- `--format, -f <format>`: Report format (text, json, html)
+- `--deep`: Enable deep analysis (file modification times, dependencies)
+
+**Examples:**
 
 ```bash
-# Pre-commit hook - generate tests for staged changes
-testgenie gen --diff
+# Basic audit
+testgenie audit
 
-# CI/CD pipeline - test coverage for PR changes
-testgenie gen --since="24 hours ago"
+# Auto-fix missing tests
+testgenie audit --fix
 
-# Daily development - quick analysis of recent work
-testgenie scan --since="1 hour ago"
+# Deep analysis with JSON report
+testgenie audit --deep --format json
 ```
 
-## 🧠 Smart Pattern Detection
+### `testgenie config`
 
-TestGenie automatically detects function patterns and generates appropriate tests:
+Display current configuration.
 
-| Pattern              | Detection                    | Generated Tests Include                         |
-| -------------------- | ---------------------------- | ----------------------------------------------- |
-| **React Component**  | JSX return, React hooks      | RTL rendering, props testing, user interactions |
-| **React Hook**       | `use*` functions, hook calls | `renderHook()`, state testing, effect cleanup   |
-| **API Function**     | `fetch()`, HTTP calls        | Request mocking, status codes, error scenarios  |
-| **Async Function**   | `async/await`, Promises      | Promise resolution/rejection, timeout handling  |
-| **Event Handler**    | Event parameters, DOM APIs   | Event mocking, `preventDefault()`, delegation   |
-| **Utility Function** | Pure functions, calculations | Input validation, edge cases, return values     |
-
-## 🧪 Generated Test Features
-
-### 🎯 **Pattern-Aware Testing**
-
-- **React Components**: RTL best practices with `render()`, `screen` queries, and `fireEvent`
-- **React Hooks**: Custom hook testing with `renderHook()` and `act()`
-- **API Functions**: HTTP mocking, status codes, network error simulation
-- **Async Functions**: Promise resolution/rejection, timeout handling
-- **Event Handlers**: DOM event mocking with `preventDefault()` and delegation
-- **Utility Functions**: Pure function testing with comprehensive edge cases
-
-### 🔧 **Smart Test Generation**
-
-- **Comprehensive Coverage**: Happy path, edge cases, error handling
-- **Auto-Framework Detection**: Detects Jest/Vitest/Mocha from package.json
-- **Smart Mocking**: Framework-specific mocking (`jest.fn()`, `vi.fn()`, `sinon.stub()`)
-- **React Testing Library**: Auto-detects RTL and includes proper imports
-- **Async Support**: Proper handling of promises and async functions
-- **TypeScript Ready**: Full TypeScript support with proper typing
-
-### 🎨 **Style-Specific Output**
-
-- **BDD Style**: Behavior-driven tests that read like specifications
-- **TDD Style**: Test-driven development with RED-GREEN-REFACTOR phases
-- **Minimal Style**: Focused, essential tests for quick validation
-- **Verbose Style**: Comprehensive tests with documentation and performance testing
-
-## 🛠️ Development
+**Example:**
 
 ```bash
-# Clone and install
-git clone https://github.com/LouayHouimli/testgenie.git
-cd testgenie
-bun install
-
-# Build for production
-bun run build
-
-# Type checking
-bun run type-check
+testgenie config
 ```
 
-## 📁 Project Structure
+## 🧪 Test Framework
 
-```
-testgenie/
-├── src/
-│   ├── cli/           # CLI commands and interface
-│   ├── core/          # Core business logic
-│   │   ├── ai/        # AI test generation with Gemini
-│   │   ├── framework/ # Framework detection (Jest/Vitest/Mocha)
-│   │   ├── git/       # Git operations and diff analysis
-│   │   ├── parser/    # AST-based code parsing
-│   │   ├── styles/    # Test style engine (BDD/TDD/minimal/verbose)
-│   │   └── templates/ # Pattern detection and templates
-│   ├── types/         # TypeScript type definitions
-│   └── utils/         # Utility functions
-├── __tests__/         # Generated tests go here
-└── examples/          # Example source files
-```
+### Jest (Currently Supported)
 
-## 🌟 Examples
+TestGenie generates Jest-compatible test files with:
 
-### React Component Testing
+- Modern ES6+ syntax and imports
+- Comprehensive mocking strategies
+- Async/await support
+- TypeScript compatibility
+- React Testing Library integration
+
+**Coming Soon:**
+
+- **Mocha**: Traditional Node.js testing framework
+- **Vitest**: Fast Vite-native testing framework
+
+## 🎨 Test Styles
+
+Choose from multiple test generation styles:
+
+### BDD (Behavior Driven Development)
 
 ```javascript
-// Input: React component with hooks
-export const Counter = ({ initialValue = 0, onCountChange }) => {
-  const [count, setCount] = useState(initialValue);
-  // ... component logic
-};
-
-// Generated test (verbose style):
-describe("Counter Component", () => {
-  let onCountChangeMock;
-
-  beforeEach(() => {
-    onCountChangeMock = jest.fn();
+describe("Calculator", () => {
+  describe("when adding numbers", () => {
+    it("should return correct sum for positive numbers", () => {
+      // test implementation
+    });
   });
-
-  it("should render initial value", () => {
-    render(<Counter initialValue={5} onCountChange={onCountChangeMock} />);
-    expect(screen.getByRole("main")).toHaveTextContent("Counter: 5");
-  });
-
-  it("should increment count", () => {
-    render(<Counter onCountChange={onCountChangeMock} />);
-    fireEvent.click(screen.getByLabelText("Increment counter"));
-    expect(screen.getByRole("main")).toHaveTextContent("Counter: 1");
-    expect(onCountChangeMock).toHaveBeenCalledWith(1);
-  });
-  // ... more comprehensive tests
 });
 ```
 
-### API Function Testing
+### TDD (Test Driven Development)
 
 ```javascript
-// Input: Async API function
-export async function fetchUserData(userId) {
-  if (!userId) throw new Error("User ID is required");
-  const response = await fetch(`/api/users/${userId}`);
-  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  return response.json();
+suite("Calculator", () => {
+  test("adds positive numbers correctly", () => {
+    // test implementation
+  });
+});
+```
+
+### Minimal
+
+```javascript
+test("Calculator.add()", () => {
+  // concise test implementation
+});
+```
+
+### Verbose
+
+```javascript
+describe("Calculator utility class", () => {
+  it("should correctly calculate the sum of two positive integers and return the expected result", () => {
+    // detailed test implementation with extensive comments
+  });
+});
+```
+
+## 🤖 AI Providers
+
+### TestGenie API (Recommended)
+
+- **No API key required**
+- **Optimized for test generation**
+- **Best performance and quality**
+
+```bash
+# Set during init or manually
+testgenie init
+# Select "TestGenie API"
+```
+
+### OpenAI (GPT Models)
+
+- **Models**: GPT-4o, GPT-4o-mini, GPT-4-turbo
+- **Setup**: Set `OPENAI_API_KEY` environment variable
+
+```bash
+export OPENAI_API_KEY="your-api-key"
+```
+
+### Google Gemini
+
+- **Models**: Gemini-1.5-Pro, Gemini-1.5-Flash
+- **Setup**: Set `GOOGLE_GENERATIVE_AI_API_KEY` environment variable
+
+```bash
+export GOOGLE_GENERATIVE_AI_API_KEY="your-api-key"
+```
+
+### Anthropic Claude
+
+- **Models**: Claude-3.5-Sonnet, Claude-3-Haiku
+- **Setup**: Set `ANTHROPIC_API_KEY` environment variable
+
+```bash
+export ANTHROPIC_API_KEY="your-api-key"
+```
+
+## ⚙️ Configuration
+
+TestGenie uses `testgenie.config.js` in your project root:
+
+```javascript
+export default {
+  // Test framework (Jest only for now)
+  framework: "jest",
+
+  // Test generation style
+  style: "bdd", // "bdd" | "tdd" | "minimal" | "verbose"
+
+  // Test directory
+  testDir: "__tests__",
+
+  // AI provider configuration
+  ai: {
+    provider: "testgenie-api", // "testgenie-api" | "openai" | "gemini" | "claude"
+    model: "auto", // or specific model name
+  },
+
+  // File patterns to include
+  include: ["src/**/*.{js,ts,jsx,tsx}", "lib/**/*.{js,ts,jsx,tsx}"],
+
+  // File patterns to exclude
+  exclude: [
+    "**/*.test.{js,ts,jsx,tsx}",
+    "**/*.spec.{js,ts,jsx,tsx}",
+    "**/node_modules/**",
+  ],
+
+  // Coverage settings
+  coverage: {
+    threshold: 80, // minimum coverage percentage
+    includeUntested: true,
+  },
+
+  // Git integration
+  git: {
+    autoCommit: false,
+    commitMessage: "test: add generated tests",
+  },
+
+  // Output preferences
+  output: {
+    emojis: true,
+    verbose: false,
+  },
+};
+```
+
+## 🔧 Requirements
+
+- **Node.js**: 16+
+- **Package Manager**: npm, yarn, pnpm, or bun
+- **Git**: For diff-based generation (optional)
+- **Test Framework**: Jest (Mocha/Vitest coming soon)
+
+### Required Dependencies
+
+TestGenie will check and prompt you to install required dependencies:
+
+**For JavaScript projects:**
+
+```bash
+npm install --save-dev jest @jest/globals
+```
+
+**For TypeScript projects:**
+
+```bash
+npm install --save-dev jest @jest/globals @types/jest ts-jest
+```
+
+## 🎯 Examples
+
+### Basic Function Testing
+
+```javascript
+// src/utils/math.js
+export function add(a, b) {
+  return a + b;
 }
 
-// Generated test (BDD style):
-describe("fetchUserData", () => {
-  describe("when making a request", () => {
-    it("should return the expected data", async () => {
-      const mockResponse = {
-        ok: true,
-        json: jest.fn().mockResolvedValue({ id: 1, name: "Test User" }),
-      };
-      global.fetch = jest.fn().mockResolvedValue(mockResponse);
+export function multiply(a, b) {
+  return a * b;
+}
+```
 
-      const data = await fetchUserData(1);
-      expect(data).toEqual({ id: 1, name: "Test User" });
-      expect(fetch).toHaveBeenCalledWith("/api/users/1");
+Generated test:
+
+```javascript
+// __tests__/src/utils/math.test.js
+import { describe, it, expect } from "@jest/globals";
+import { add, multiply } from "../../../src/utils/math.js";
+
+describe("add", () => {
+  it("should return correct sum for positive numbers", () => {
+    expect(add(2, 3)).toBe(5);
+  });
+
+  it("should handle negative numbers", () => {
+    expect(add(-1, 1)).toBe(0);
+  });
+
+  it("should handle zero values", () => {
+    expect(add(0, 5)).toBe(5);
+  });
+});
+
+describe("multiply", () => {
+  it("should return correct product", () => {
+    expect(multiply(3, 4)).toBe(12);
+  });
+
+  it("should handle zero multiplication", () => {
+    expect(multiply(5, 0)).toBe(0);
+  });
+});
+```
+
+### Async Function Testing
+
+```javascript
+// Generated test for async functions
+describe("fetchUserData", () => {
+  it("should fetch user data successfully", async () => {
+    const mockUser = { id: 1, name: "John" };
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue(mockUser),
     });
+
+    const result = await fetchUserData(1);
+    expect(result).toEqual(mockUser);
+    expect(fetch).toHaveBeenCalledWith("/api/users/1");
   });
 });
 ```
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-MIT © Testgenie
+MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙋‍♂️ Support
+
+- 📧 Email: support@testgenie.ai
+- 🐛 Issues: [GitHub Issues](https://github.com/testgenie-ai/testgenie/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/testgenie-ai/testgenie/discussions)
+
+---
+
+**Happy Testing! 🧪✨**
