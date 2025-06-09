@@ -71,7 +71,7 @@ jobs:
       - name: Bump version
         id: bump
         run: |
-          NEW_VERSION=$(bun version ${{ steps.version.outputs.type }} --no-git-tag-version)
+          NEW_VERSION=$(npm version ${{ steps.version.outputs.type }} --no-git-tag-version)
           echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
           echo "version_number=${NEW_VERSION#v}" >> $GITHUB_OUTPUT
 
