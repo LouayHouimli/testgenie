@@ -62,7 +62,9 @@ jobs:
 
       - name: Update package.json and create tag
         run: |
-          git add package.json bun.lockb
+          git add package.json
+          # Add lock file if it exists
+          git add bun.lockb 2>/dev/null || git add package-lock.json 2>/dev/null || true
           git commit -m "chore: release ${{ steps.bump.outputs.version }}"
           git tag ${{ steps.bump.outputs.version }}
 
