@@ -1,6 +1,6 @@
 {
   "name": "testgenie-ai",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI-powered test generator with framework support, pattern detection, and React Testing Library integration",
   "type": "module",
   "main": "dist/index.js",
@@ -14,11 +14,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LouayHouimli/testgenie.git"
+    "url": "git+https://github.com/testgenie-ai/testgenie.git"
   },
-  "homepage": "https://github.com/LouayHouimli/testgenie#readme",
+  "homepage": "https://github.com/testgenie-ai/testgenie#readme",
   "bugs": {
-    "url": "https://github.com/LouayHouimli/testgenie/issues"
+    "url": "https://github.com/testgenie-ai/testgenie/issues"
   },
   "scripts": {
     "dev": "bun run src/index.ts",
