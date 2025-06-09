@@ -1,19 +1,49 @@
 # 🧪 TestGenie AI
 
+![npm](https://img.shields.io/npm/v/testgenie-ai)
+![license](https://img.shields.io/npm/l/testgenie-ai)
+![downloads](https://img.shields.io/npm/dw/testgenie-ai)
+
 **AI-powered CLI test generator that creates comprehensive test suites for your JavaScript/TypeScript projects in seconds.**
 
 Generate high-quality, maintainable test files using advanced AI models. TestGenie analyzes your code structure, detects patterns, and creates thorough test coverage automatically.
 
+## 📚 Table of Contents
+
+- [✨ Features](#-features)
+- [🚀 Quick Start](#-quick-start)
+- [📋 Commands](#-commands)
+- [🧪 Test Framework](#-test-framework)
+- [🎨 Test Styles](#-test-styles)
+- [🤖 AI Providers](#-ai-providers)
+- [⚙️ Configuration](#️-configuration)
+- [🔧 Requirements](#-requirements)
+- [🎯 Examples](#-examples)
+- [❓ FAQ](#-faq)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [🙋‍♂️ Support](#-support)
+
 ## ✨ Features
 
-- 🤖 **AI-Powered Generation**: Creates comprehensive test suites using multiple AI providers
-- 🎯 **Smart Code Analysis**: Automatically detects functions, patterns, and dependencies
-- 📊 **Test Coverage Analysis**: Scans projects and identifies untested code
-- 🔄 **Git Integration**: Generate tests for changed files or specific commits
-- ⚡ **Framework Support**: Jest (Mocha and Vitest coming soon!)
-- 🎨 **Multiple Test Styles**: BDD, TDD, minimal, and verbose options
-- 🌐 **Multi-Provider AI**: OpenAI, Google Gemini, Anthropic Claude, or TestGenie API
-- 📁 **Flexible Configuration**: Customize test directories, patterns, and coverage thresholds
+### 🤖 AI-Powered Intelligence
+
+- **Smart Code Analysis**: Automatically detects functions, patterns, and dependencies
+- **Multi-Provider Support**: OpenAI, Google Gemini, Anthropic Claude, or TestGenie API
+- **Comprehensive Test Generation**: Creates thorough test suites with edge cases
+
+### ⚡ Developer Experience
+
+- **Lightning Fast**: Generate complete test suites in seconds
+- **Multiple Test Styles**: BDD, TDD, minimal, and verbose options
+- **Framework Support**: Jest (Mocha and Vitest coming soon!)
+- **Git Integration**: Generate tests for changed files or specific commits
+
+### 📊 Project Management
+
+- **Test Coverage Analysis**: Scans projects and identifies untested code
+- **Flexible Configuration**: Customize test directories, patterns, and coverage thresholds
+- **Audit & Recommendations**: Comprehensive coverage reports with actionable insights
 
 ## 🚀 Quick Start
 
@@ -55,6 +85,16 @@ testgenie gen --diff
 # Generate tests for changes since specific commit
 testgenie gen --since HEAD~3
 ```
+
+### Help & Commands
+
+```bash
+testgenie --help
+```
+
+Get comprehensive help for all available commands and options.
+
+---
 
 ## 📋 Commands
 
@@ -268,6 +308,8 @@ export GOOGLE_GENERATIVE_AI_API_KEY="your-api-key"
 export ANTHROPIC_API_KEY="your-api-key"
 ```
 
+---
+
 ## ⚙️ Configuration
 
 TestGenie uses `testgenie.config.js` in your project root:
@@ -321,10 +363,14 @@ export default {
 
 ## 🔧 Requirements
 
-- **Node.js**: 16+
-- **Package Manager**: npm, yarn, pnpm, or bun
-- **Git**: For diff-based generation (optional)
-- **Test Framework**: Jest (Mocha/Vitest coming soon)
+### System Requirements
+
+| Requirement         | Version                 | Notes                               |
+| ------------------- | ----------------------- | ----------------------------------- |
+| **Node.js**         | 16+                     | LTS recommended                     |
+| **Package Manager** | npm, yarn, pnpm, or bun | Any modern package manager          |
+| **Git**             | Any                     | Optional, for diff-based generation |
+| **Test Framework**  | Jest                    | Mocha/Vitest coming soon            |
 
 ### Required Dependencies
 
@@ -341,6 +387,8 @@ npm install --save-dev jest @jest/globals
 ```bash
 npm install --save-dev jest @jest/globals @types/jest ts-jest
 ```
+
+---
 
 ## 🎯 Examples
 
@@ -407,6 +455,124 @@ describe("fetchUserData", () => {
   });
 });
 ```
+
+## ❓ FAQ
+
+### Why are my tests not being generated?
+
+Check that the file path is correct and that it's not excluded in `exclude` patterns in your config. Common issues include:
+
+- **File not found**: Verify the file path exists and is accessible
+- **Excluded patterns**: Check your `testgenie.config.js` exclude patterns
+- **Unsupported file type**: Ensure the file has a supported extension (`.js`, `.ts`, `.jsx`, `.tsx`)
+- **AI provider issues**: Verify your API keys are set correctly for external providers
+
+### Can I use it with Mocha or Vitest?
+
+Mocha and Vitest support is coming soon! Currently, only Jest is supported. We're actively working on expanding framework support:
+
+- **Jest**: ✅ Full support
+- **Mocha**: 🚧 Coming soon
+- **Vitest**: 🚧 Coming soon
+
+### How do I set up different AI providers?
+
+Each provider requires different setup:
+
+**TestGenie API** (Recommended):
+
+- No setup required
+- Best performance for test generation
+
+**OpenAI**:
+
+```bash
+export OPENAI_API_KEY="your-api-key"
+```
+
+**Google Gemini**:
+
+```bash
+export GOOGLE_GENERATIVE_AI_API_KEY="your-api-key"
+```
+
+**Anthropic Claude**:
+
+```bash
+export ANTHROPIC_API_KEY="your-api-key"
+```
+
+### What file types are supported?
+
+TestGenie supports:
+
+- **JavaScript**: `.js`, `.jsx`
+- **TypeScript**: `.ts`, `.tsx`
+- **React Components**: Both JS and TS
+- **Node.js modules**: CommonJS and ES modules
+
+### How can I customize test output?
+
+You can customize tests through your `testgenie.config.js`:
+
+```javascript
+export default {
+  style: "bdd", // or "tdd", "minimal", "verbose"
+  testDir: "__tests__", // custom test directory
+  output: {
+    emojis: true, // enable/disable emojis
+    verbose: false, // detailed output
+  },
+};
+```
+
+### Can I generate tests for existing test files?
+
+TestGenie automatically excludes existing test files (`.test.js`, `.spec.js`, etc.) to avoid conflicts. If you want to regenerate tests, either:
+
+1. Delete the existing test file first
+2. Use a different output directory with `--output`
+
+### How do I handle TypeScript configurations?
+
+TestGenie automatically detects TypeScript projects and generates appropriate tests. Ensure you have:
+
+```bash
+npm install --save-dev @types/jest ts-jest
+```
+
+Your `jest.config.js` should include:
+
+```javascript
+export default {
+  preset: "ts-jest",
+  testEnvironment: "node",
+};
+```
+
+### What's the difference between test styles?
+
+- **BDD**: Descriptive, nested describe/it blocks
+- **TDD**: Traditional test/suite structure
+- **Minimal**: Concise, straightforward tests
+- **Verbose**: Detailed with extensive comments
+
+### How accurate are the generated tests?
+
+TestGenie uses advanced AI models specifically trained for test generation. While the tests are comprehensive and follow best practices, always review them before committing. The AI:
+
+- Analyzes your code structure and dependencies
+- Generates realistic test scenarios
+- Includes edge cases and error handling
+- Follows testing best practices
+
+### Can I contribute or request features?
+
+Absolutely! We welcome contributions and feature requests:
+
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/testgenie-ai/testgenie/issues)
+- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/testgenie-ai/testgenie/discussions)
+- 🤝 **Contributions**: See our Contributing section below
 
 ## 🤝 Contributing
 

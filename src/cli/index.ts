@@ -42,8 +42,8 @@ function getWelcomeMessage(): string {
 function getEpilogMessage(): string {
   if (!isInitialized()) {
     return `🎯 New to testgenie? Start with 'testgenie init' to configure your preferences!
-🚀 Visit https://github.com/LouayHouimli/testgenie for more info`;
+🚀 Visit https://github.com/testgenie-ai/testgenie for more info`;
   }
 
-  return `🤖 Powered by AI test generation | 🚀 Visit https://github.com/LouayHouimli/testgenie for more info`;
+  return `🤖 Powered by AI test generation | 🚀 Visit https://github.com/testgenie-ai/testgenie for more info`;
 }

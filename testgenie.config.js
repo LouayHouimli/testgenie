@@ -11,7 +11,7 @@ export default {
   
   // AI provider configuration
   ai: {
-    provider: "claude",
+    provider: "testgenie-api",
     model: "auto",
     maxTokens: 4000,
     temperature: 0.7,
@@ -52,7 +52,7 @@ export default {
   
   // Git integration
   git: {
-    autoCommit: true,
+    autoCommit: false,
     commitMessage: "feat: add generated tests"
   }
 };
