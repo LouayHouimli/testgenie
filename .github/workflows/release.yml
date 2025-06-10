@@ -49,7 +49,7 @@ jobs:
         run: bun run build
 
       - name: Run tests
-        run: testgenie test
+        run: bun run dist/index.js test
 
       - name: Configure Git for github-actions[bot]
         run: |
