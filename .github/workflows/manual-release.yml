@@ -20,6 +20,10 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout code
@@ -73,25 +77,28 @@ jobs:
           git push origin main
           git push origin ${{ steps.bump.outputs.version }}
 
-      - name: Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.bump.outputs.version }}
-          release_name: TestGenie AI ${{ steps.bump.outputs.version }}
+          name: TestGenie AI ${{ steps.bump.outputs.version }}
           body: |
+            ## 🎉 Release Notes
+
             ${{ github.event.inputs.release_notes }}
 
-            ## Installation
+            ## 📦 Installation
             ```bash
             npm install -g testgenie-ai@${{ steps.bump.outputs.version_number }}
             ```
 
-            ## What's Changed
-            See the [full changelog](https://github.com/testgenie-ai/testgenie/compare/v${{ steps.bump.outputs.version_number }}...HEAD) for details.
+            ## 🔗 Links
+            - 📖 [Documentation](https://github.com/testgenie-ai/testgenie#readme)
+            - 🐛 [Report Issues](https://github.com/testgenie-ai/testgenie/issues)
+            - 💬 [Discussions](https://github.com/testgenie-ai/testgenie/discussions)
           draft: false
           prerelease: false
+          generate_release_notes: true
 
       - name: Publish to npm
         run: bun publish --access public

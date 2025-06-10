@@ -19,6 +19,10 @@ jobs:
   release:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout code
@@ -97,23 +101,28 @@ jobs:
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.bump.outputs.version }}
-          release_name: Release ${{ steps.bump.outputs.version }}
+          name: TestGenie AI ${{ steps.bump.outputs.version }}
           body: |
-            ## Changes
+            ## 🎉 What's New in ${{ steps.bump.outputs.version }}
+
             ${{ steps.changelog.outputs.changelog }}
 
-            ## Installation
+            ## 📦 Installation
             ```bash
             npm install -g testgenie-ai@${{ steps.bump.outputs.version_number }}
             ```
+
+            ## 🔗 Links
+            - 📖 [Documentation](https://github.com/testgenie-ai/testgenie#readme)
+            - 🐛 [Report Issues](https://github.com/testgenie-ai/testgenie/issues)
+            - 💬 [Discussions](https://github.com/testgenie-ai/testgenie/discussions)
           draft: false
           prerelease: false
+          generate_release_notes: true
 
       - name: Publish to npm
         run: bun publish --access public
