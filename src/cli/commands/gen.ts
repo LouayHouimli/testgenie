@@ -248,7 +248,8 @@ async function generateAndSaveTests(parsedFiles: any[], argv: any) {
         filePath: parsedFile.filePath,
       });
 
-      const testFilePath = getTestFilePath(parsedFile.filePath, config.testDir);
+      const testDir = argv.output || config.testDir;
+      const testFilePath = getTestFilePath(parsedFile.filePath, testDir);
       await ensureDir(path.dirname(testFilePath));
       await writeFile(testFilePath, aiResponse.testCode);
 

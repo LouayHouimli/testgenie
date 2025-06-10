@@ -24,6 +24,12 @@ export const auditCommand: yargs.CommandModule = {
         describe: "Output format",
         choices: ["json", "text", "html"] as const,
         default: "text" as const,
+      })
+      .option("deep", {
+        describe:
+          "Enable deep analysis (file modification times, dependencies)",
+        type: "boolean",
+        default: false,
       }),
   handler: async (argv: ArgumentsCamelCase<any>) => {
     requireInitialization("audit");
@@ -44,7 +50,6 @@ export const auditCommand: yargs.CommandModule = {
 
       const { sourceFiles, testFiles } = await parser.discoverFiles(argv.path);
 
-      // Basic audit functionality
       const results = await performAudit(
         sourceFiles,
         testFiles,
@@ -52,7 +57,86 @@ export const auditCommand: yargs.CommandModule = {
         argv.deep as boolean
       );
 
-      if (argv.json) {
+      if (argv.fix && results.untested.length > 0) {
+        consola.info(
+          `\n🔧 Auto-fixing: Generating tests for ${results.untested.length} uncovered files`
+        );
+
+        const { AITestGenerator } = await import("../../core/ai/index.ts");
+        const { writeFile, ensureDir } = await import("fs-extra");
+        const { getTestFilePath, checkDependencies } = await import(
+          "../../utils/index.ts"
+        );
+        const path = require("path");
+
+        const requiredDeps = ["jest", "@jest/globals"];
+        if (
+          results.untested.some(
+            (f: string) => f.endsWith(".ts") || f.endsWith(".tsx")
+          )
+        ) {
+          requiredDeps.push("@types/jest", "ts-jest");
+        }
+
+        const depCheck = await checkDependencies(requiredDeps);
+        if (depCheck.missing.length > 0) {
+          consola.error(
+            `❌ Missing required dependencies: ${depCheck.missing.join(", ")}`
+          );
+          consola.info(`💡 Install them with: ${depCheck.installCommand}`);
+          process.exit(1);
+        }
+
+        const aiGenerator = new AITestGenerator(config);
+        const providerStatus = aiGenerator.getProviderStatus();
+
+        if (!providerStatus.configured) {
+          consola.error(
+            `❌ AI provider (${providerStatus.provider}) not configured`
+          );
+          consola.info(`💡 ${providerStatus.message}`);
+          process.exit(1);
+        }
+
+        let generated = 0;
+        for (const sourceFile of results.untested.slice(0, 10)) {
+          try {
+            consola.info(`🧪 Generating tests for: ${sourceFile}`);
+            const parsedFile = await parser.parseFile(sourceFile);
+            const aiResponse = await aiGenerator.generateTests({
+              sourceCode: "",
+              functions: parsedFile.functions,
+              framework: "jest",
+              style: config.style,
+              filePath: sourceFile,
+            });
+
+            const testDir = config.testDir;
+            const testFilePath = getTestFilePath(sourceFile, testDir);
+            await ensureDir(path.dirname(testFilePath));
+            await writeFile(testFilePath, aiResponse.testCode, "utf8");
+
+            consola.success(`✅ Generated: ${testFilePath}`);
+            generated++;
+          } catch (error) {
+            consola.warn(
+              `⚠️ Failed to generate test for ${sourceFile}: ${error}`
+            );
+          }
+        }
+
+        consola.success(`\n🎉 Generated ${generated} test files`);
+
+        if (results.untested.length > 10) {
+          consola.info(
+            `💡 ${
+              results.untested.length - 10
+            } more files need tests. Run 'testgenie gen <file>' for individual files.`
+          );
+        }
+      }
+
+      if (argv.format === "json") {
         console.log(JSON.stringify(results, null, 2));
       } else {
         displayAuditResults(results, config);

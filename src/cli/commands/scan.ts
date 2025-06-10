@@ -41,6 +41,17 @@ export const scanCommand: yargs.CommandModule = {
         alias: "v",
         describe: "Show detailed output",
         type: "boolean",
+      })
+      .option("output", {
+        alias: "o",
+        describe: "Save results to file",
+        type: "string",
+      })
+      .option("format", {
+        alias: "f",
+        describe: "Output format",
+        choices: ["json", "csv", "text"] as const,
+        default: "text" as const,
       }),
   handler: async (argv: ArgumentsCamelCase<any>) => {
     requireInitialization("scan");
@@ -90,6 +101,22 @@ export const scanCommand: yargs.CommandModule = {
         }
 
         if (diffInfo) {
+          const gitResults = {
+            type: "git-analysis",
+            branch,
+            commits: commits.slice(0, 3),
+            summary: {
+              totalFiles: diffInfo.totalFiles,
+              codeFiles: diffInfo.codeFiles,
+            },
+            changes: diffInfo.changes,
+          };
+
+          if (argv.output) {
+            await saveResults(gitResults, argv.output, argv.format);
+            consola.success(`📁 Results saved to: ${argv.output}`);
+          }
+
           consola.info(`\n📊 Changes Summary:`);
           consola.info(`  Total files: ${diffInfo.totalFiles}`);
           consola.info(`  Code files: ${diffInfo.codeFiles}`);
@@ -173,7 +200,6 @@ export const scanCommand: yargs.CommandModule = {
       consola.info(`📁 Found ${sourceFiles.length} source files`);
       consola.info(`🧪 Found ${testFiles.length} test files`);
 
-      // Calculate coverage
       const untested = sourceFiles.filter((sourceFile) => {
         const { getTestFilePath } = require("../../utils/index.ts");
         const expectedTestFile = getTestFilePath(sourceFile, config.testDir);
@@ -191,6 +217,27 @@ export const scanCommand: yargs.CommandModule = {
               100
             ).toFixed(1)
           : 0;
+
+      const scanResults = {
+        type: "scan",
+        path: argv.path,
+        summary: {
+          totalSourceFiles: sourceFiles.length,
+          totalTestFiles: testFiles.length,
+          coverage: Number(coverage),
+          threshold: config.coverage.threshold,
+          untestedFiles: untested.length,
+        },
+        sourceFiles,
+        testFiles,
+        untestedFiles: untested,
+        timestamp: new Date().toISOString(),
+      };
+
+      if (argv.output) {
+        await saveResults(scanResults, argv.output, argv.format);
+        consola.success(`📁 Results saved to: ${argv.output}`);
+      }
 
       consola.info(
         `📊 Test coverage: ${coverage}% (${
@@ -240,9 +287,91 @@ export const scanCommand: yargs.CommandModule = {
   },
 };
 
+async function saveResults(results: any, outputFile: string, format: string) {
+  const { writeFile, ensureDir } = await import("fs-extra");
+  const { dirname } = await import("path");
+
+  await ensureDir(dirname(outputFile));
+
+  let content: string;
+
+  switch (format) {
+    case "json":
+      content = JSON.stringify(results, null, 2);
+      break;
+    case "csv":
+      content = convertToCSV(results);
+      break;
+    case "text":
+    default:
+      content = convertToText(results);
+      break;
+  }
+
+  await writeFile(outputFile, content, "utf8");
+}
+
+function convertToCSV(results: any): string {
+  if (results.type === "scan") {
+    const headers = ["File", "Type", "HasTest"];
+    const rows = [headers.join(",")];
+
+    results.sourceFiles.forEach((file: string) => {
+      const hasTest = !results.untestedFiles.includes(file);
+      rows.push(`"${file}","source","${hasTest}"`);
+    });
+
+    results.testFiles.forEach((file: string) => {
+      rows.push(`"${file}","test","true"`);
+    });
+
+    return rows.join("\n");
+  }
+
+  return JSON.stringify(results, null, 2);
+}
+
+function convertToText(results: any): string {
+  const lines = [];
+  lines.push(`TestGenie Scan Results`);
+  lines.push(`Generated: ${new Date().toISOString()}`);
+  lines.push(`Path: ${results.path || "."}`);
+  lines.push("");
+
+  if (results.type === "scan") {
+    lines.push(`Summary:`);
+    lines.push(`  Total source files: ${results.summary.totalSourceFiles}`);
+    lines.push(`  Total test files: ${results.summary.totalTestFiles}`);
+    lines.push(`  Coverage: ${results.summary.coverage}%`);
+    lines.push(`  Untested files: ${results.summary.untestedFiles}`);
+    lines.push("");
+
+    if (results.untestedFiles.length > 0) {
+      lines.push(`Files without tests:`);
+      results.untestedFiles.forEach((file: string) => {
+        lines.push(`  - ${file}`);
+      });
+    }
+  } else if (results.type === "git-analysis") {
+    lines.push(`Git Analysis:`);
+    lines.push(`  Branch: ${results.branch}`);
+    lines.push(`  Total files changed: ${results.summary.totalFiles}`);
+    lines.push(`  Code files changed: ${results.summary.codeFiles}`);
+    lines.push("");
+
+    if (results.changes.length > 0) {
+      lines.push(`Changed files:`);
+      results.changes.forEach((change: any) => {
+        lines.push(`  ${change.status}: ${change.file}`);
+      });
+    }
+  }
+
+  return lines.join("\n");
+}
+
 function isExcludedFile(filePath: string, excludePatterns: string[]): boolean {
   return excludePatterns.some((pattern) => {
-    // Simple pattern matching - could be enhanced with proper glob matching
     if (pattern.includes("**")) {
       const regex = pattern.replace(/\*\*/g, ".*").replace(/\*/g, "[^/]*");
       return new RegExp(regex).test(filePath);
