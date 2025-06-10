@@ -1,6 +1,6 @@
 {
   "name": "testgenie-ai",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "AI-powered test generator with framework support, pattern detection, and React Testing Library integration",
   "type": "module",
   "main": "dist/index.js",
@@ -25,7 +25,6 @@
     "build": "bun build src/index.ts --outdir dist --target node --minify",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
-    
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build",
     "testgenie": "bun run dev"
