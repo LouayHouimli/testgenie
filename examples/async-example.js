@@ -32,6 +32,7 @@ export function calculateWithTimeout(numbers) {
     setTimeout(() => {
       if (!Array.isArray(numbers)) {
         reject(new Error("Input must be an array"));
+        return;
       }
       const sum = numbers.reduce((acc, num) => acc + num, 0);
       resolve(sum);

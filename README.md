@@ -31,6 +31,9 @@ Generate high-quality, maintainable test files using advanced AI models. TestGen
 - **Smart Code Analysis**: Automatically detects functions, patterns, and dependencies
 - **Multi-Provider Support**: OpenAI, Google Gemini, Anthropic Claude, or TestGenie API
 - **Comprehensive Test Generation**: Creates thorough test suites with edge cases
+- **Advanced Async Analysis**: Understands Promise flows, timing, and error handling
+- **React Component Intelligence**: Detects JSX/TSX and generates proper React tests
+- **Behavioral Understanding**: Analyzes component validation, form logic, and user flows
 
 ### ⚡ Developer Experience
 
@@ -38,12 +41,15 @@ Generate high-quality, maintainable test files using advanced AI models. TestGen
 - **Multiple Test Styles**: BDD, TDD, minimal, and verbose options
 - **Framework Support**: Jest (Mocha and Vitest coming soon!)
 - **Git Integration**: Generate tests for changed files or specific commits
+- **Automatic Setup**: Auto-installs dependencies and creates Jest configuration
+- **React/JSX Support**: Full React Testing Library integration with automatic detection
 
 ### 📊 Project Management
 
 - **Test Coverage Analysis**: Scans projects and identifies untested code
 - **Flexible Configuration**: Customize test directories, patterns, and coverage thresholds
 - **Audit & Recommendations**: Comprehensive coverage reports with actionable insights
+- **Test Execution**: Built-in test runner with multiple reporters and coverage options
 
 ## 🚀 Quick Start
 
@@ -86,6 +92,19 @@ testgenie gen --diff
 testgenie gen --since HEAD~3
 ```
 
+### Run Tests
+
+```bash
+# Run all tests with automatic setup
+testgenie test
+
+# Run tests with coverage report
+testgenie test --coverage
+
+# Watch mode for development
+testgenie test --watch
+```
+
 ### Help & Commands
 
 ```bash
@@ -93,6 +112,28 @@ testgenie --help
 ```
 
 Get comprehensive help for all available commands and options.
+
+### Complete Workflow
+
+```bash
+# 1. Initialize project
+testgenie init
+
+# 2. Scan for files needing tests
+testgenie scan
+
+# 3. Generate tests for specific files
+testgenie gen src/components/Button.tsx
+
+# 4. Auto-generate tests for uncovered files
+testgenie audit --fix
+
+# 5. Run tests with automatic setup
+testgenie test --coverage
+
+# 6. Continuous development with watch mode
+testgenie test --watch
+```
 
 ---
 
@@ -196,6 +237,55 @@ testgenie audit --fix
 testgenie audit --deep --format json
 ```
 
+### `testgenie test [pattern]`
+
+Execute tests in the configured test directory with automatic setup.
+
+**Arguments:**
+
+- `pattern`: Test file pattern to run (optional)
+
+**Options:**
+
+- `--watch, -w`: Watch mode for continuous testing
+- `--coverage, -c`: Generate coverage reports
+- `--reporter, -r <format>`: Test reporter format (default, json, verbose, minimal)
+- `--filter, -f <pattern>`: Filter tests by name pattern
+- `--parallel, -p`: Run tests in parallel (default: true)
+- `--bail, -b`: Stop on first test failure
+- `--silent, -s`: Suppress test output (show only results)
+- `--timeout, -t <ms>`: Test timeout in milliseconds (default: 30000)
+
+**Examples:**
+
+```bash
+# Run all tests with automatic setup
+testgenie test
+
+# Run tests with coverage
+testgenie test --coverage
+
+# Run specific test pattern
+testgenie test --filter="Calculator"
+
+# Watch mode with verbose output
+testgenie test --watch --reporter=verbose
+
+# Run tests in a specific directory
+testgenie test src/components
+
+# Minimal output for CI/CD
+testgenie test --silent --reporter=minimal
+```
+
+**Features:**
+
+- **Automatic Setup**: Detects and installs missing Jest dependencies
+- **Smart Configuration**: Creates optimized Jest config for your project type
+- **React Support**: Automatically detects and configures React Testing Library
+- **Multiple Reporters**: Choose from default, JSON, verbose, or minimal output
+- **Pattern Matching**: Run specific tests or test suites
+
 ### `testgenie config`
 
 Display current configuration.
@@ -210,13 +300,31 @@ testgenie config
 
 ### Jest (Currently Supported)
 
-TestGenie generates Jest-compatible test files with:
+TestGenie provides full Jest integration with automatic setup:
+
+**Test Generation:**
 
 - Modern ES6+ syntax and imports
 - Comprehensive mocking strategies
 - Async/await support
 - TypeScript compatibility
 - React Testing Library integration
+
+**Automatic Setup:**
+
+- Detects and installs missing Jest dependencies
+- Creates optimized Jest configuration
+- Configures TypeScript support when needed
+- Sets up React Testing Library for JSX/TSX files
+- Configures jsdom environment for React components
+
+**Test Execution:**
+
+- Built-in test runner with `testgenie test`
+- Multiple output reporters (default, JSON, verbose, minimal)
+- Coverage reporting and analysis
+- Watch mode for continuous testing
+- Pattern-based test filtering
 
 **Coming Soon:**
 
@@ -374,18 +482,29 @@ export default {
 
 ### Required Dependencies
 
-TestGenie will check and prompt you to install required dependencies:
+TestGenie automatically detects and installs missing dependencies when you run `testgenie test`:
 
 **For JavaScript projects:**
 
-```bash
-npm install --save-dev jest @jest/globals
-```
+- `jest`, `@jest/globals`
+- `@testing-library/react`, `@testing-library/jest-dom` (for React)
+- `jest-environment-jsdom` (for React components)
 
 **For TypeScript projects:**
 
+- `@types/jest`, `ts-jest` (additional to above)
+
+**Manual installation (optional):**
+
 ```bash
+# JavaScript
+npm install --save-dev jest @jest/globals
+
+# TypeScript
 npm install --save-dev jest @jest/globals @types/jest ts-jest
+
+# React projects (auto-detected and installed)
+npm install --save-dev @testing-library/react @testing-library/jest-dom jest-environment-jsdom
 ```
 
 ---
@@ -456,6 +575,53 @@ describe("fetchUserData", () => {
 });
 ```
 
+### React Component Testing
+
+TestGenie automatically detects React components and generates comprehensive tests:
+
+```bash
+# Generate tests for React component
+testgenie gen src/components/UserForm.tsx
+
+# Run React tests with automatic setup
+testgenie test --coverage
+```
+
+Generated React test with automatic imports and setup:
+
+```javascript
+import { describe, it, expect, jest, beforeEach } from "@jest/globals";
+import React from "react";
+import { render, fireEvent, screen } from "@testing-library/react";
+import { UserForm } from "../../../src/components/UserForm";
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  window.alert = jest.fn();
+});
+
+describe("UserForm", () => {
+  it("should submit form with valid data", () => {
+    const onSubmit = jest.fn();
+    render(<UserForm onSubmit={onSubmit} />);
+
+    fireEvent.change(screen.getByLabelText("Name:"), {
+      target: { value: "John Doe" },
+    });
+    fireEvent.change(screen.getByLabelText("Email:"), {
+      target: { value: "john@example.com" },
+    });
+    fireEvent.submit(screen.getByRole("button", { name: /Submit/i }));
+
+    expect(onSubmit).toHaveBeenCalledWith({
+      name: "John Doe",
+      email: "john@example.com",
+      age: "",
+    });
+  });
+});
+```
+
 ## ❓ FAQ
 
 ### Why are my tests not being generated?
@@ -466,6 +632,28 @@ Check that the file path is correct and that it's not excluded in `exclude` patt
 - **Excluded patterns**: Check your `testgenie.config.js` exclude patterns
 - **Unsupported file type**: Ensure the file has a supported extension (`.js`, `.ts`, `.jsx`, `.tsx`)
 - **AI provider issues**: Verify your API keys are set correctly for external providers
+
+### How do I run tests after generating them?
+
+TestGenie includes a built-in test runner with automatic setup:
+
+```bash
+# Basic test execution
+testgenie test
+
+# With coverage reports
+testgenie test --coverage
+
+# Watch mode for development
+testgenie test --watch --reporter=verbose
+```
+
+The test command automatically:
+
+- Detects and installs missing Jest dependencies
+- Creates optimized Jest configuration
+- Sets up React Testing Library for React projects
+- Configures TypeScript support when needed
 
 ### Can I use it with Mocha or Vitest?
 
@@ -559,12 +747,30 @@ export default {
 
 ### How accurate are the generated tests?
 
-TestGenie uses advanced AI models specifically trained for test generation. While the tests are comprehensive and follow best practices, always review them before committing. The AI:
+TestGenie uses advanced AI models specifically trained for test generation with enhanced behavioral analysis. The AI provides production-ready tests by:
 
-- Analyzes your code structure and dependencies
-- Generates realistic test scenarios
-- Includes edge cases and error handling
-- Follows testing best practices
+**Code Analysis:**
+
+- Analyzes your code structure, dependencies, and logic flow
+- Understands React component validation and form behavior
+- Traces async function execution and Promise handling
+- Detects DOM interactions and browser API usage
+
+**Test Quality:**
+
+- Generates realistic test scenarios that match actual code behavior
+- Includes comprehensive edge cases and error handling
+- Follows testing best practices and framework conventions
+- Creates proper mocks for FormData, console methods, and DOM elements
+
+**React & Async Expertise:**
+
+- Automatically imports React and React Testing Library for JSX components
+- Handles form validation logic and user interaction flows
+- Properly mocks browser APIs (window.alert, console.error)
+- Understands Promise timing and rejection conditions
+
+While tests are comprehensive and thoroughly analyzed, always review them before committing to ensure they meet your specific requirements.
 
 ### Can I contribute or request features?
 

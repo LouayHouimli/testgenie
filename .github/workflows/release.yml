@@ -45,11 +45,11 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Run tests
-        run: bun test
-
       - name: Build project
         run: bun run build
+
+      - name: Run tests
+        run: testgenie test
 
       - name: Configure Git for github-actions[bot]
         run: |

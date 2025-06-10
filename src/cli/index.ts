@@ -26,6 +26,7 @@ function getWelcomeMessage(): string {
    testgenie init    # Set up your configuration
    testgenie scan    # Analyze your codebase
    testgenie gen     # Generate tests
+   testgenie test    # Execute tests
 
 💡 Run 'testgenie init' first to get started!`;
   }
@@ -33,6 +34,7 @@ function getWelcomeMessage(): string {
   return `⚡ Available commands:
    testgenie scan    # Analyze your codebase
    testgenie gen     # Generate tests  
+   testgenie test    # Execute tests
    testgenie audit   # Review test coverage
    testgenie config  # View configuration
 
