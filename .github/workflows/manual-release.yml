@@ -100,7 +100,37 @@ jobs:
           prerelease: false
           generate_release_notes: true
 
+      - name: Verify package build
+        run: |
+          echo "📦 Checking package contents..."
+          ls -la
+          if [ -f "package.json" ]; then
+            echo "✅ package.json found"
+            cat package.json | jq .name,.version,.main
+          else
+            echo "❌ package.json not found"
+            exit 1
+          fi
+
       - name: Publish to npm
-        run: bun publish --access public
+        run: |
+          echo "🚀 Publishing to npm..."
+          echo "Registry: $(npm config get registry)"
+          echo "Auth token configured: $([ -n "$NODE_AUTH_TOKEN" ] && echo "✅ Yes" || echo "❌ No")"
+
+          # Use npm for publishing since it's more reliable
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Verify npm publication
+        run: |
+          echo "🔍 Verifying npm publication..."
+          sleep 10  # Wait for npm to process
+          npm view testgenie-ai@${{ steps.bump.outputs.version_number }} version || echo "⚠️ Package not found on registry yet"
+
+      - name: Notify success
+        run: |
+          echo "🎉 Successfully released ${{ steps.bump.outputs.version }}"
+          echo "📦 Published to npm: https://www.npmjs.com/package/testgenie-ai"
+          echo "🏷️ GitHub release: https://github.com/testgenie-ai/testgenie/releases/tag/${{ steps.bump.outputs.version }}"
