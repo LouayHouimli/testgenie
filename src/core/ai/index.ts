@@ -53,7 +53,6 @@ export class AITestGenerator {
     try {
       result = await this.generateWithProvider(prompt);
     } catch (error) {
-      // Fallback to a simpler prompt if the main one fails
       const fallbackPrompt = this.buildFallbackPrompt(
         sourceCode,
         request.functions,
@@ -140,7 +139,6 @@ export class AITestGenerator {
       return configModel;
     }
 
-    // Default models for each provider
     switch (provider) {
       case "testgenie-api":
         return "auto";
@@ -180,7 +178,6 @@ export class AITestGenerator {
     const language = isTypeScript ? "TypeScript" : "JavaScript";
     const fileExtension = isTypeScript ? "ts" : "js";
 
-    // Calculate correct import paths
     const sourceFileRelativePath = filePath
       ? this.calculateSourceImportPath(filePath)
       : "../src/module";
@@ -423,7 +420,6 @@ Generate the test file:`;
     cleaned = cleaned.replace(/\n```\s*$/gm, "");
     cleaned = cleaned.replace(/^```\s*$/gm, "");
 
-    // Remove any remaining markdown artifacts
     cleaned = cleaned.replace(/^`{1,2}[\w]*\s*\n/gm, "");
     cleaned = cleaned.replace(/\n`{1,2}\s*$/gm, "");
 

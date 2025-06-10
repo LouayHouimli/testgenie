@@ -91,7 +91,6 @@ async function performAudit(
 
   const issues = [];
 
-  // Check coverage threshold
   if (Number(coverage) < config.coverage.threshold) {
     issues.push({
       type: "coverage",
@@ -101,7 +100,6 @@ async function performAudit(
     });
   }
 
-  // Check for outdated tests (if deep analysis)
   let outdatedTests = [];
   if (deep) {
     const { stat } = await import("fs-extra");
@@ -126,9 +124,7 @@ async function performAudit(
             });
           }
         }
-      } catch (error) {
-        // Ignore file stat errors
-      }
+      } catch (error) {}
     }
 
     if (outdatedTests.length > 0) {
@@ -217,7 +213,7 @@ function displayAuditResults(results: any, config: any) {
 
   if (issues.length > 0) {
     consola.info("\n🔍 Issues Found:");
-    issues.forEach((issue, index) => {
+    issues.forEach((issue: any, index: number) => {
       const icon = issue.severity === "warning" ? "⚠️" : "ℹ️";
       consola.info(`  ${icon} ${issue.message}`);
 
@@ -236,7 +232,7 @@ function displayAuditResults(results: any, config: any) {
 
   if (recommendations.length > 0) {
     consola.info("\n💡 Recommendations:");
-    recommendations.forEach((rec) => {
+    recommendations.forEach((rec: any) => {
       consola.info(`  📋 ${rec.message}`);
       if (rec.command) {
         consola.info(`     Command: ${rec.command}`);
