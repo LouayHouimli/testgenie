@@ -1,6 +1,6 @@
 {
   "name": "testgenie-ai",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "AI-powered test generator with framework support, pattern detection, and React Testing Library integration",
   "type": "module",
   "main": "dist/index.js",
