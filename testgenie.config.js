@@ -11,8 +11,8 @@ export default {
   
   // AI provider configuration
   ai: {
-    provider: "testgenie-api",
-    model: "auto",
+    provider: "gemini",
+    model: "gemini-1.5-flash",
     maxTokens: 4000,
     temperature: 0.7,
   },

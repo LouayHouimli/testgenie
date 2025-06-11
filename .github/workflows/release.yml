@@ -84,7 +84,7 @@ jobs:
           git add package.json
           # Add lock file if it exists
           git add bun.lockb 2>/dev/null || git add package-lock.json 2>/dev/null || true
-          git commit -m "Version Package [skip ci]"
+          git commit -m "Version Package"
           git tag testgenie-ai@${{ steps.bump.outputs.version_number }}
 
       - name: Push changes and tags
