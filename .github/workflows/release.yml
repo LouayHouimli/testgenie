@@ -75,9 +75,44 @@ jobs:
       - name: Bump version
         id: bump
         run: |
-          NEW_VERSION=$(npm version ${{ steps.version.outputs.type }} --no-git-tag-version)
-          echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
-          echo "version_number=${NEW_VERSION#v}" >> $GITHUB_OUTPUT
+          # Get current version
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          IFS='.' read -r -a VERSION_PARTS <<< "$CURRENT_VERSION"
+          MAJOR=${VERSION_PARTS[0]}
+          MINOR=${VERSION_PARTS[1]}
+          PATCH=${VERSION_PARTS[2]}
+
+          # Apply the version bump with max 10 constraint
+          if [[ "${{ steps.version.outputs.type }}" == "patch" ]]; then
+            PATCH=$((PATCH + 1))
+            if [[ $PATCH -ge 10 ]]; then
+              PATCH=0
+              MINOR=$((MINOR + 1))
+              if [[ $MINOR -ge 10 ]]; then
+                MINOR=0
+                MAJOR=$((MAJOR + 1))
+              fi
+            fi
+          elif [[ "${{ steps.version.outputs.type }}" == "minor" ]]; then
+            MINOR=$((MINOR + 1))
+            PATCH=0
+            if [[ $MINOR -ge 10 ]]; then
+              MINOR=0
+              MAJOR=$((MAJOR + 1))
+            fi
+          elif [[ "${{ steps.version.outputs.type }}" == "major" ]]; then
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+          fi
+
+          # Set new version
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          npm version $NEW_VERSION --no-git-tag-version
+
+          # Set outputs
+          echo "version=v${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "version_number=${NEW_VERSION}" >> $GITHUB_OUTPUT
 
       - name: Update package.json and create tag
         run: |

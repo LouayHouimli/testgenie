@@ -1,0 +1,55 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1747068863068,
+      "tag": "0000_past_blockbuster",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1748273155618,
+      "tag": "0001_damp_luckman",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1749047145958,
+      "tag": "0002_nice_the_call",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1749107670334,
+      "tag": "0003_panoramic_nico_minoru",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1749107801481,
+      "tag": "0004_even_hercules",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1749108467279,
+      "tag": "0005_careless_the_initiative",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1749108652817,
+      "tag": "0006_small_jane_foster",
+      "breakpoints": true
+    }
+  ]
+}

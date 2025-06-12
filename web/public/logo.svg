@@ -1,0 +1,74 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Primary gradient for the main elements -->
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#404040;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Accent gradient for highlights -->
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0a;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#404040;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#0a0a0a;stop-opacity:0.4" />
+    </linearGradient>
+
+    <!-- Glow effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background subtle pattern -->
+  <rect width="200" height="60" fill="url(#accentGradient)" opacity="0.05" rx="8"/>
+
+  <!-- Main icon - Clock/Patch hybrid -->
+  <g transform="translate(10, 10)">
+    <!-- Outer ring with subtle gradient -->
+    <circle cx="20" cy="20" r="18" fill="none" stroke="url(#primaryGradient)" stroke-width="2" opacity="0.8"/>
+
+    <!-- Inner elements representing time patches -->
+    <path d="M8 20 L16 12 L24 20 L32 12" fill="none" stroke="url(#primaryGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Central sparkle/star element -->
+    <g transform="translate(20, 20)">
+      <path d="M0 -6 L1.5 -1.5 L6 0 L1.5 1.5 L0 6 L-1.5 1.5 L-6 0 L-1.5 -1.5 Z" fill="url(#primaryGradient)" filter="url(#glow)"/>
+    </g>
+
+    <!-- Time markers -->
+    <circle cx="20" cy="8" r="1.5" fill="url(#primaryGradient)" opacity="0.6"/>
+    <circle cx="32" cy="20" r="1.5" fill="url(#primaryGradient)" opacity="0.6"/>
+    <circle cx="20" cy="32" r="1.5" fill="url(#primaryGradient)" opacity="0.6"/>
+    <circle cx="8" cy="20" r="1.5" fill="url(#primaryGradient)" opacity="0.6"/>
+  </g>
+
+  <!-- TestGenie text -->
+  <g transform="translate(60, 15)">
+    <!-- "Test" part -->
+    <text x="0" y="20" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="url(#primaryGradient)" letter-spacing="-0.5px">
+      Test
+    </text>
+
+    <!-- "Genie" part with slight offset -->
+    <text x="48" y="20" font-family="Inter, sans-serif" font-size="22" font-weight="400" fill="url(#primaryGradient)" letter-spacing="-0.3px">
+      Genie
+    </text>
+
+    <!-- Tagline -->
+    <text x="0" y="38" font-family="Inter, sans-serif" font-size="9" font-weight="500" fill="url(#primaryGradient)" opacity="0.7" letter-spacing="1px" text-transform="uppercase">
+      AI Test Generator
+    </text>
+  </g>
+
+  <!-- Decorative elements -->
+  <g opacity="0.3">
+    <!-- Small accent dots -->
+    <circle cx="180" cy="15" r="2" fill="url(#primaryGradient)" opacity="0.4"/>
+    <circle cx="185" cy="25" r="1.5" fill="url(#primaryGradient)" opacity="0.3"/>
+    <circle cx="175" cy="35" r="1" fill="url(#primaryGradient)" opacity="0.5"/>
+  </g>
+</svg>
